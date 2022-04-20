@@ -1,46 +1,15 @@
-/*
-    [학습목표]
-    1. 캔버스 설정
-    2. documet
-    3. context
-*/
-
-// 음.. 여기서의 학습목표?
-// 함수를 축약하고 가지고 노는거? 그 함수의 구조를 파악하는거? 으흠
-
 
 const canvas = document.getElementById('myCanvas');      // 이 아이디를 가지고 특정 탭에 접근을 한다
 const context = canvas.getContext('2d');            // context라는 존재를 통해 그리기를 한다
 
 document.addEventListener('keydown', keyDownEeventHandler);
-//const up = document.addEventListener('keyup', keyUpEeventHandler);
 
-// let rectCenter = 100
-// let rectMoveDirX = 10;
-
-// function keyDownEeventHandler(e) {
-//     if(e.key == 'ArrowRight') {
-//         // 바를 오른쪽으로 이동
-//         //console.log(alert("오른쪽 된다!"))
-//         arcPosX += rectMoveDirX;
-
-//     }
-//     if(e.key == 'ArrowLeft') {
-//         //console.log(alert("왼쪽 된다!"))
-//     }    
-// }
-
-// // function keyUpEeventHandler() {
-// //     if () {
-
-// //     }
-// // }
 
 let arcPosX = canvas.width / 2
 let arcPosY = canvas.height / 2
 
 let barWidth = 100;
-let barHeight = 20
+let barHeight = 40
 let rectPosX = canvas.width / 2 - barWidth / 2
 let rectPosY = canvas.height - barHeight / 2
 let rectMoveDirX = 10;
@@ -90,19 +59,10 @@ function keyDownEeventHandler(e) {
     paddle.bottom = rectPosY + barHeight;
 }
 
-// function keyUpEeventHandler() {
-//     if () {
 
-//     }
-// }
-// ==== 
-
-
-
-
+// ball과 bar가 만나지 않는 경우 
 function isCollisionRectToRect(rectA, rectB)
 {
-    // ball과 bar가 만나지 않는 경우 
     // a의 왼쪽과 b의 오른쪽
     // a의 오른과 b의 왼쪽
     // a의 아래쪽과 b의 위쪽
@@ -120,15 +80,6 @@ function isCollisionRectToRect(rectA, rectB)
 
 function update() {
 
-    //데이터 수정 (도형의 위치 이동)
-
-    // if (arcPosX < canvas.width ){
-    //     arcPosX++
-    // } else {
-    //     arcPosY--;
-    // }
-    //arcPosX += arcMoveDir;
-    
     if(arcPosX - arcRaius < 0 ) {
         arcMoveDirX = 1;
         
@@ -159,10 +110,6 @@ function update() {
     }
     
 }
-
-// 추가실습. 공의 움직임을 빠르게 해보자
-// moveDir의값
-
 
 function draw() {
 
@@ -201,7 +148,3 @@ function drawRect(){
 
 setInterval(update, 10);
 setInterval(draw, 10);
-
-// 실습. 동그라미가 오른쪽으로 움직이다가 캔버스 끝에 닿으면 왼쪽으로 이동 
-// 핵심. 배운거 : 변수를 넣는것을 두려워하지말자
-// 내가 바꾸게 뭔지. 어떤걸 바꿔야하는지 그걸 변수로 지정을 해서 바꾸는 연습
