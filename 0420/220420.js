@@ -4,6 +4,7 @@ const context = canvas.getContext('2d');            // context라는 존재를 �
 
 // keydown
 document.addEventListener('keydown', keyDownEeventHandler);
+document.addEventListener('keyup', keyDownEeventHandler); // 자연스러움을 추가하기 위해 쓸 수 있다. 
 
 // arc
 let arcPosX = canvas.width / 2
@@ -41,7 +42,44 @@ let paddle = {
     bottom : 0
 }
 
-// ball과 bar가 만나지 않는 경우 
+// 벽돌만들기
+// let brick = {  //이렇게 구조를 잡겠다는 형태
+//     left : 0,
+//     right : 0, 
+//     top : 0, 
+//     bottom : 0,
+//     column : 0,
+//     row : 0    
+// }
+
+const brickWidth = 50; // 간격 10
+const brickHeight = 25 // 간격 5
+const brickColumn = 5;
+const brickRow = 4;
+let brickArray = []
+
+
+function setBricks() 
+{
+    for(let i = 0; i < brickRow; i++){
+        brickArray[i] = []
+        for(let j = 0; j < brickColumn; j++){
+            brickArray[i][j] = {
+                // 여기 숫자 의미를 잘 파악해야한다 
+                left : 55 + j * (brickWidth + 10),
+                right : 55 + j * (brickWidth + 10) + 50, //60으로 나중에 묶기
+                top : 30 + i * (brickHeight + 5), 
+                bottom : 30 + i * (brickHeight + 5) + 25,
+                row : j,
+                column : i,
+                isAlive : true // 여기에 변수를 추가하는 개념 
+            };
+        }
+    }
+    console.log(brickArray[1][3].left) // 이게 결국 함수 안에서만 호출됐기 때문에.. 어떻게 할 수가 없네; 
+}
+
+// ball과 bar가 만나지 않는 경우 설정
 function isCollisionRectToRect(rectA, rectB)
 {
     // a의 왼쪽과 b의 오른쪽
@@ -100,15 +138,31 @@ function update() {
     ball.top = arcPosY - arcRaius 
     ball.bottom = arcPosY + arcRaius
     
+
     // 충돌확인
     if(isCollisionRectToRect(ball, paddle)){
         arcMoveDirY = 1;
         //arcMoveDirX = -1;
         arcPosY = paddle.top - arcRaius;
     }
+
+    for(let i = 0;  i < brickRow; i++)
+    {
+        for(let j = 0; j < brickColumn; j++)
+        {
+            if(brickArray[i][j].isAlive && isCollisionRectToRect(ball, brickArray[i][j]))
+            {
+                // 벽돌을 안보이게.. 위치를 바꾸던지.. ball의 방향을 바꾸던지 
+                // console.log(i,j)
+                brickArray[i][j].isAlive = false;            
+
+                arcMoveDirY = -1
+            }
+        }
+    }
 }
 
-// 화면 그리기(도형)
+// ==================================== 화면 그리기(도형) ======================================
 function draw() {
 
     // 화면 클리어
@@ -117,6 +171,7 @@ function draw() {
     // 다른 도형 그리기
     drawBar();
     drawArc();
+    drawBricks()
 }
 
 // ball 그리기
@@ -141,7 +196,31 @@ function drawBar(){
     context.closePath(); // 그리기를 끝내겠다
 }
 
+// block 그리기
+function drawBricks() 
+{
+    context.beginPath();
+    for(let i = 0; i < brickRow; i++)
+    {
+        for(let j = 0; j < brickColumn; j++)
+        {
+            if(brickArray[i][j].isAlive)
+            {
+                context.rect(brickArray[i][j].left, brickArray[i][j].top, brickWidth, brickHeight)
+                context.fillStyle = 'coral'; // 이때 색칠하는것을 for문 안에 넣느냐 마느냐로 블록색을 여러개로 줄 수 있다.
+                context.fill();
+            }
+            // context.rect(brickArray[i][j].left, brickArray[i][j].top, brickWidth, brickHeight)
+            // context.fillStyle = 'coral'; // 이때 색칠하는것을 for문 안에 넣느냐 마느냐로 블록색을 여러개로 줄 수 있다.
+            // context.fill();
+        }
+    }
+    context.closePath();
+}
+
+
 
 setInterval(draw, 10);
 // 동적 움직임을 위해 코드 추가
 setInterval(update, 10);
+setBricks();
