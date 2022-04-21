@@ -159,7 +159,8 @@ function keyDownEeventHandler(e) {
 
     if(e.key == ' ' && startClick ){
         setInterval(update, 10);   
-        setInterval(centerUpdate, 10);   
+        setInterval(movingTest, 10);   
+
         startClick = false;
     }
 
@@ -234,7 +235,7 @@ function update() {
 
 // 이 부분을 사실상 기존 코드와 똑같이 구현했으니 한번 수정해보자
 // 가운데 블록 움직이기 (위에서 centerUpdate 추가해주기)
-function centerUpdate() {
+//function centerUpdate() {
     // if(center.left < 0 ) {
     //     centerMoveDirX = 1;
         
@@ -260,13 +261,13 @@ function centerUpdate() {
     // ball.bottom = arcPosY + arcRaius
 
 
-    if(isCollisionRectToRect(ball, black)){
-        arcMoveDirY = -1 * arcMoveDirY ;
-        arcMoveDirX = -1 * arcMoveDirX ;
-        //arcMoveDirX = -1;
-        //arcPosY = paddle.top - arcRaius;
-    }
-}
+//     if(isCollisionRectToRect(ball, black)){
+//         arcMoveDirY = -1 * arcMoveDirY ;
+//         arcMoveDirX = -1 * arcMoveDirX ;
+//         arcMoveDirX = -1;
+//         arcPosY = paddle.top - arcRaius;
+//     }
+// }
 
 // clear하는 새로운 함수 (교수님 버젼)
 function checkToWin() {
@@ -290,25 +291,25 @@ function checkToWin() {
     }
 }
 // 가운데 블록을 생성해보자
-class centerBlock {
-    constructor(left, top, right, bottom, color){
-        this.left = left;
-        this.top = top;
-        this.right = right;
-        this.bottom = bottom;
-        this.color = color;
-    }
+// class centerBlock {
+//     constructor(left, top, right, bottom, color){
+//         this.left = left;
+//         this.top = top;
+//         this.right = right;
+//         this.bottom = bottom;
+//         this.color = color;
+//     }
 
-    draw() {
-        context.beginPath()
-        context.rect(this.left, this.top, brickWidth, brickHeight)
-        context.fillStyle = this.color;
-        context.fill();
-        context.closePath(); 
-    }
-}
+//     draw() {
+//         context.beginPath()
+//         context.rect(this.left, this.top, brickWidth, brickHeight)
+//         context.fillStyle = this.color;
+//         context.fill();
+//         context.closePath(); 
+//     }
+// }
 // 요거 위치 중요함
-let center = new centerBlock(canvas.width / 2 - 25, canvas.height / 2 - 10, canvas.width / 2 + 25, canvas.height / 2 + 10, 'black')
+// let center = new centerBlock(canvas.width / 2 - 25, canvas.height / 2 - 10, canvas.width / 2 + 25, canvas.height / 2 + 10, 'black')
 
 
 
@@ -322,7 +323,9 @@ function draw() {
     drawBar();
     drawArc();
     drawBricks() //블록 그리기 추가
-    center.draw(); // 가운데 블록 그리기 추가 
+    drawBricks2();
+    //testa.draw(); // 가운데 블록 그리기 추가 
+    //testa.draw();
 }
 
 // ball 그리기
@@ -402,7 +405,43 @@ class Brick {
     }
 }
 
+
+
 // // 가운데 블록을 생성해보자
+
+class CenterBlock extends Brick {
+    movingAction() {
+        if(this.left < 0 ) {
+        centerMoveDirX = 1;
+        
+        } else if(this.left > canvas.width - brickWidth){
+            centerMoveDirX = -1;
+        }
+        this.left += centerMoveDirX ;
+        }
+}
+
+let testa = new CenterBlock(canvas.width / 2 - 25, canvas.height / 2 - 10, canvas.width / 2 + 25, canvas.height / 2 + 10, 'yellow')
+
+function movingTest(){
+    testa.movingAction();
+}
+// update함수에 넣어버리기
+
+
+// let center = new centerBlock(canvas.width / 2 - 25, canvas.height / 2 - 10, canvas.width / 2 + 25, canvas.height / 2 + 10, 'black')
+
+// block 그리기
+function drawBricks2() 
+{
+    context.beginPath();
+  
+    testa.draw();
+
+    context.closePath();
+}
+
+
 // class centerBlock {
 //     constructor(left, top, right, bottom, color){
 //         this.left = left;
