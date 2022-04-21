@@ -36,8 +36,8 @@ let blackMoveDirX = 1;
 let arcSpeed = 4;
 
 // bar
-let barMoveDirX = 20;
-let barSpeed = 10;
+let barMoveDirX = 10;
+let barSpeed = 40;
 
 //객체생성
 let ball = {
@@ -77,29 +77,38 @@ const brickWidth = 50; // 간격 10
 const brickHeight = 25 // 간격 5
 const brickColumn = 5;
 const brickRow = 4;
-let brickArray = []
+let brickArray 
 let clearCount = 0;
 
 function setBricks() 
 {
+    brickArray = []
+
     for(let i = 0; i < brickRow; i++){
         brickArray[i] = []
         for(let j = 0; j < brickColumn; j++){
-            brickArray[i][j] = {
-                // 여기 숫자 의미를 잘 파악해야한다 
-                left : 55 + j * (brickWidth + 10),
-                right : 55 + j * (brickWidth + 10) + 50, //60으로 나중에 묶기
-                top : 30 + i * (brickHeight + 5), 
-                bottom : 30 + i * (brickHeight + 5) + 25,
-                row : j,
-                column : i,
-                isAlive : true, // 여기에 변수를 추가하는 개념 
-                //test : 0
+            // brickArray[i][j] = {
+            //     // 여기 숫자 의미를 잘 파악해야한다 
+            //     left : 55 + j * (brickWidth + 10),
+            //     right : 55 + j * (brickWidth + 10) + 50, //60으로 나중에 묶기
+            //     top : 30 + i * (brickHeight + 5), 
+            //     bottom : 30 + i * (brickHeight + 5) + 25,
+            //     row : j,
+            //     column : i,
+            //     isAlive : true, // 여기에 변수를 추가하는 개념 
+            //     //test : 0a
+            brickArray[i][j] = new Brick(
+                55 + j * (brickWidth + 10),
+                30 + i * (brickHeight + 5),
+                55 + j * (brickWidth + 10) + 50,
+                30 + i * (brickHeight + 5) + 25,
+                'black'
+                )
             };
         }
     }
     //console.log(brickArray[1][3].left) // 이게 결국 함수 안에서만 호출됐기 때문에.. 어떻게 할 수가 없네; 
-}
+
 
 // ball과 bar가 만나지 않는 경우 설정
 function isCollisionRectToRect(rectA, rectB)
@@ -128,37 +137,26 @@ function keyDownEeventHandler(e) {
         //console.log(alert("오른쪽 된다!"))
          barPosX += barMoveDirX;
          //arcPosX += barMoveDirX
-         if(startClick){
-         arcPosX = barPosX + barWidth / 2
-        }
 
     } else if (e.key == 'ArrowLeft' && barPosX > 0) {
         //console.log(alert("왼쪽 된다!"))
         barPosX -= barMoveDirX;
-        //arcPosX -= barMoveDirX 
-        if(startClick){  
-        arcPosX = barPosX + barWidth / 2
-        }    
+        //arcPosX -= barMoveDirX     
     }
     
-    // if(e.key == 'ArrowRight' && startClick  && barPosX + barWidth < canvas.width ) {
-        
-    //     //arcPosX += barMoveDirX
+    if(e.key == 'ArrowRight' && startClick  && barPosX + barWidth < canvas.width ) {
 
-    //     arcPosX = barPosX + barWidth / 2
-        
-    //     //console.log(arcPosX)
-    //     //console.log(barPosX)
+        arcPosX += barMoveDirX
 
-    // } else if (e.key == 'ArrowLeft' && startClick && barPosX > 0)  {
+    } else if (e.key == 'ArrowLeft' && startClick && barPosX > 0)  {
         
-    //     arcPosX = barPosX + barWidth / 2  
-    //     //arcPosX -= barMoveDirX
-    // }
+        arcPosX -= barMoveDirX     
+
+    }
 
     if(e.key == ' ' && startClick ){
         setInterval(update, 10); 
-        setInterval(blackUpdate, 1); 
+        setInterval(blackUpdate, 20); 
         
         startClick = false;
     }
@@ -182,9 +180,8 @@ function update() {
     if(arcPosY - arcRaius < 0) {
         arcMoveDirY = -1;
     } else if(arcPosY + arcRaius > canvas.height) {
-        arcMoveDirY = 1;
-        //location.reload();
-        //alert("Game Over!!");
+        location.reload();
+        alert("Game Over!!");
     }
 
     //arcSpeed+=0.01;
@@ -203,15 +200,14 @@ function update() {
         //arcPosY = paddle.top - arcRaius;
     }
 
-    black.left = test.left - arcRaius;
-    black.right = test.left + test.right + arcRaius;
-    black.top = test.top + arcRaius;
-    black.bottom = test.bottom + test.top - arcRaius;
+    black.left = test.left;
+    black.right = test.left + test.right;
+    black.top = test.top;
+    black.bottom = test.bottom + test.top;
 
     // 가운데블록과 충돌확인
     if(isCollisionRectToRect(ball, black)){
-        arcMoveDirY = -1 * arcMoveDirY ;
-        arcMoveDirX = -1 * arcMoveDirX ;
+        arcMoveDirY = 1;
         //arcMoveDirX = -1;
         //arcPosY = paddle.top - arcRaius;
     }
@@ -253,7 +249,7 @@ function blackUpdate() {
             blackMoveDirX = -1;
         }
     
-        test.left += blackMoveDirX ;
+        test.left += blackMoveDirX * arcSpeed;
 
 }
 
@@ -290,7 +286,7 @@ function draw() {
     drawBar();
     drawArc();
     drawBricks(); //블록 그리기 추가
-    drawBlack();
+    //drawBlack();
 }
 
 // ball 그리기
@@ -323,65 +319,43 @@ function drawBricks()
     {
         for(let j = 0; j < brickColumn; j++)
         {
-            if(brickArray[i][j].isAlive)
-            {
-                context.rect(brickArray[i][j].left, brickArray[i][j].top, brickWidth, brickHeight)
-                context.fillStyle = 'coral'; // 이때 색칠하는것을 for문 안에 넣느냐 마느냐로 블록색을 여러개로 줄 수 있다.
-                context.fill();
-            } else {
-                //alert("되냐?")
-                //console.log("ehlsi?")
-            }
+            // if(brickArray[i][j].isAlive)
+            // {
+            //     context.rect(brickArray[i][j].left, brickArray[i][j].top, brickWidth, brickHeight)
+            //     context.fillStyle = 'coral'; // 이때 색칠하는것을 for문 안에 넣느냐 마느냐로 블록색을 여러개로 줄 수 있다.
+            //     context.fill();
+            // } 
+            brickArray[i][j].draw();
         }
     }
     context.closePath();
 }
 
 // ====== class로 접근해보기 
+// 클래스로 객체의 설계도를 만든다
+// 명사로 지칭되는 객체를 설계한다. 자동차, 책, 몬스터, 사람..
 
-//let barWidth = 250;
-//let barHeight = 40
-// let arcPosX = canvas.width / 2
-// let arcPosY = canvas.height / 2
-
-
-class BlackBrick {
+class Brick {
     // 속성에 해당하는 내용
-    constructor(left, top, right, bottom){
+    constructor(left, top, right, bottom, color){
         this.left = left;
         this.top = top;
         this.right = right;
         this.bottom = bottom;
+        this.isAlive = true;
+        this.color = color
+    }
+    draw() {
+        if(this.isAlive){
+        context.rect(this.left, this.top, brickWidth, brickHeight)
+        context.fillStyle = this.color; 
+        context.fill();
+        }
     }
 }
-
-let test = new BlackBrick(canvas.width / 2 -25, canvas.height / 2, 50, 20)
-
-class MovingBrick extends BlackBrick {
-    // 기능에 해당하는 내용
-    movingAction() {
-        this.right++; 
-        //console.log('움직이는중!');
-        //this.top++;
-    }
-}
-
-let test2 = new MovingBrick(canvas.width / 2 -25, canvas.height / 2, 50, 20)
-test2.movingAction();
-
-function drawBlack(){
-
-    context.beginPath(); // 그리기를 시작하겠다
-                //  x    ,    y   ,   width ,  height
-    context.rect( test.left, test.top, test.right, test.bottom);
-    context.fillStyle = 'black'; // 색깔 고르고
-    context.fill(); // 채우기
-    context.closePath(); // 그리기를 끝내겠다
-}
-
 
 
 setInterval(draw, 10);
 // 동적 움직임을 위해 코드 추가
-//setInterval(update, 10);
+// setInterval(update, 10);
 setBricks();

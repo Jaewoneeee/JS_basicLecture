@@ -31,13 +31,12 @@ let arcPosY = canvas.height - barHeight / 2 - arcRaius
 // ball
 let arcMoveDirX = 1;
 let arcMoveDirY = 1; // 아 맞네 ㅋㅋ
-let blackMoveDirX = 1;
-//let blackMoveDirY = 1; // 아 맞네 ㅋㅋ
 let arcSpeed = 4;
+let centerMoveDirX = 1;
 
 // bar
-let barMoveDirX = 20;
-let barSpeed = 10;
+let barMoveDirX = 10;
+let barSpeed = 40;
 
 //객체생성
 let ball = {
@@ -77,25 +76,38 @@ const brickWidth = 50; // 간격 10
 const brickHeight = 25 // 간격 5
 const brickColumn = 5;
 const brickRow = 4;
-let brickArray = []
 let clearCount = 0;
+// let brickArray = []
+let brickArray  // class로 바꾸며 그냥 선언만 해주자
 
 function setBricks() 
 {
+    brickArray = [] // why? 여기서 다시 선언해주는거지?  
+
     for(let i = 0; i < brickRow; i++){
         brickArray[i] = []
         for(let j = 0; j < brickColumn; j++){
-            brickArray[i][j] = {
-                // 여기 숫자 의미를 잘 파악해야한다 
-                left : 55 + j * (brickWidth + 10),
-                right : 55 + j * (brickWidth + 10) + 50, //60으로 나중에 묶기
-                top : 30 + i * (brickHeight + 5), 
-                bottom : 30 + i * (brickHeight + 5) + 25,
-                row : j,
-                column : i,
-                isAlive : true, // 여기에 변수를 추가하는 개념 
-                //test : 0
-            };
+
+            // 기존코드 
+            // brickArray[i][j] = {
+            //     // 여기 숫자 의미를 잘 파악해야한다 
+            //     left : 55 + j * (brickWidth + 10),
+            //     right : 55 + j * (brickWidth + 10) + 50, //60으로 나중에 묶기
+            //     top : 30 + i * (brickHeight + 5), 
+            //     bottom : 30 + i * (brickHeight + 5) + 25,
+            //     row : j,
+            //     column : i,
+            //     isAlive : true, // 여기에 변수를 추가하는 개념 
+
+            // class로 수정해보자
+            // 미리 선언해둔 각각의 class인자에 값을 넣어주는것.
+            brickArray[i][j] = new Brick(
+                55 + j * (brickWidth + 10), // this.left
+                30 + i * (brickHeight + 5), // this.top
+                55 + j * (brickWidth + 10) + 50, // this.right
+                30 + i * (brickHeight + 5) + 25, // this.bottom
+                'green' // this.color
+            )
         }
     }
     //console.log(brickArray[1][3].left) // 이게 결국 함수 안에서만 호출됐기 때문에.. 어떻게 할 수가 없네; 
@@ -128,38 +140,26 @@ function keyDownEeventHandler(e) {
         //console.log(alert("오른쪽 된다!"))
          barPosX += barMoveDirX;
          //arcPosX += barMoveDirX
-         if(startClick){
-         arcPosX = barPosX + barWidth / 2
-        }
 
     } else if (e.key == 'ArrowLeft' && barPosX > 0) {
         //console.log(alert("왼쪽 된다!"))
         barPosX -= barMoveDirX;
-        //arcPosX -= barMoveDirX 
-        if(startClick){  
-        arcPosX = barPosX + barWidth / 2
-        }    
+        //arcPosX -= barMoveDirX     
     }
     
-    // if(e.key == 'ArrowRight' && startClick  && barPosX + barWidth < canvas.width ) {
-        
-    //     //arcPosX += barMoveDirX
+    if(e.key == 'ArrowRight' && startClick  && barPosX + barWidth < canvas.width ) {
 
-    //     arcPosX = barPosX + barWidth / 2
-        
-    //     //console.log(arcPosX)
-    //     //console.log(barPosX)
+        arcPosX += barMoveDirX
 
-    // } else if (e.key == 'ArrowLeft' && startClick && barPosX > 0)  {
+    } else if (e.key == 'ArrowLeft' && startClick && barPosX > 0)  {
         
-    //     arcPosX = barPosX + barWidth / 2  
-    //     //arcPosX -= barMoveDirX
-    // }
+        arcPosX -= barMoveDirX     
+
+    }
 
     if(e.key == ' ' && startClick ){
-        setInterval(update, 10); 
-        setInterval(blackUpdate, 1); 
-        
+        setInterval(update, 10);   
+        setInterval(centerUpdate, 10);   
         startClick = false;
     }
 
@@ -183,8 +183,8 @@ function update() {
         arcMoveDirY = -1;
     } else if(arcPosY + arcRaius > canvas.height) {
         arcMoveDirY = 1;
-        //location.reload();
-        //alert("Game Over!!");
+        // location.reload();
+        // alert("Game Over!!");
     }
 
     //arcSpeed+=0.01;
@@ -195,28 +195,17 @@ function update() {
     ball.right = arcPosX + arcRaius 
     ball.top = arcPosY - arcRaius 
     ball.bottom = arcPosY + arcRaius
+    
 
-    // bar와 충돌확인
+    // 충돌확인
     if(isCollisionRectToRect(ball, paddle)){
         arcMoveDirY = 1;
         //arcMoveDirX = -1;
         //arcPosY = paddle.top - arcRaius;
     }
 
-    black.left = test.left - arcRaius;
-    black.right = test.left + test.right + arcRaius;
-    black.top = test.top + arcRaius;
-    black.bottom = test.bottom + test.top - arcRaius;
+   
 
-    // 가운데블록과 충돌확인
-    if(isCollisionRectToRect(ball, black)){
-        arcMoveDirY = -1 * arcMoveDirY ;
-        arcMoveDirX = -1 * arcMoveDirX ;
-        //arcMoveDirX = -1;
-        //arcPosY = paddle.top - arcRaius;
-    }
-
-    // 벽돌과 충돌확인
     for(let i = 0;  i < brickRow; i++)
     {
         for(let j = 0; j < brickColumn; j++)
@@ -243,18 +232,40 @@ function update() {
     }
 }
 
-// 일단 가운데 블록 움지이기.
-function blackUpdate() {
+// 이 부분을 사실상 기존 코드와 똑같이 구현했으니 한번 수정해보자
+// 가운데 블록 움직이기 (위에서 centerUpdate 추가해주기)
+function centerUpdate() {
+    // if(center.left < 0 ) {
+    //     centerMoveDirX = 1;
+        
+    // } else if(center.left > canvas.width - center.right){
+    //     centerMoveDirX = -1;
+    // }
+    // center.left += centerMoveDirX ;
 
-        if(test.left < 0 ) {
-            blackMoveDirX = 1;
-            
-        } else if(test.left > canvas.width - test.right){
-            blackMoveDirX = -1;
-        }
+
+    // 가운데블록과 충돌확인
     
-        test.left += blackMoveDirX ;
+    // black.left = center.left - arcRaius;
+    // black.right = center.left + center.right + arcRaius;
+    // black.top = center.top + arcRaius;
+    // black.bottom = center.bottom + center.top - arcRaius;
 
+    // arcPosX += arcMoveDirX * arcSpeed;
+    // arcPosY -= arcMoveDirY * arcSpeed;
+
+    // ball.left = arcPosX - arcRaius ;
+    // ball.right = arcPosX + arcRaius 
+    // ball.top = arcPosY - arcRaius 
+    // ball.bottom = arcPosY + arcRaius
+
+
+    if(isCollisionRectToRect(ball, black)){
+        arcMoveDirY = -1 * arcMoveDirY ;
+        arcMoveDirX = -1 * arcMoveDirX ;
+        //arcMoveDirX = -1;
+        //arcPosY = paddle.top - arcRaius;
+    }
 }
 
 // clear하는 새로운 함수 (교수님 버젼)
@@ -278,6 +289,27 @@ function checkToWin() {
 
     }
 }
+// 가운데 블록을 생성해보자
+class centerBlock {
+    constructor(left, top, right, bottom, color){
+        this.left = left;
+        this.top = top;
+        this.right = right;
+        this.bottom = bottom;
+        this.color = color;
+    }
+
+    draw() {
+        context.beginPath()
+        context.rect(this.left, this.top, brickWidth, brickHeight)
+        context.fillStyle = this.color;
+        context.fill();
+        context.closePath(); 
+    }
+}
+// 요거 위치 중요함
+let center = new centerBlock(canvas.width / 2 - 25, canvas.height / 2 - 10, canvas.width / 2 + 25, canvas.height / 2 + 10, 'black')
+
 
 
 // ==================================== 화면 그리기(도형) ======================================
@@ -289,8 +321,8 @@ function draw() {
     // 다른 도형 그리기
     drawBar();
     drawArc();
-    drawBricks(); //블록 그리기 추가
-    drawBlack();
+    drawBricks() //블록 그리기 추가
+    center.draw(); // 가운데 블록 그리기 추가 
 }
 
 // ball 그리기
@@ -323,62 +355,71 @@ function drawBricks()
     {
         for(let j = 0; j < brickColumn; j++)
         {
-            if(brickArray[i][j].isAlive)
-            {
-                context.rect(brickArray[i][j].left, brickArray[i][j].top, brickWidth, brickHeight)
-                context.fillStyle = 'coral'; // 이때 색칠하는것을 for문 안에 넣느냐 마느냐로 블록색을 여러개로 줄 수 있다.
-                context.fill();
-            } else {
-                //alert("되냐?")
-                //console.log("ehlsi?")
-            }
+            // if(brickArray[i][j].isAlive)
+            // {
+            //     context.rect(brickArray[i][j].left, brickArray[i][j].top, brickWidth, brickHeight)
+            //     context.fillStyle = 'coral'; // 이때 색칠하는것을 for문 안에 넣느냐 마느냐로 블록색을 여러개로 줄 수 있다.
+            //     context.fill();
+            // }
+
+            // 위 조건문을 주석처리하고, 밑에서 선언해준 class에있는 함수만 불러내주면 된다.
+            brickArray[i][j].draw();
         }
     }
     context.closePath();
 }
 
-// ====== class로 접근해보기 
+// class로 새롭게 접근해보자
 
-//let barWidth = 250;
-//let barHeight = 40
-// let arcPosX = canvas.width / 2
-// let arcPosY = canvas.height / 2
+// 지금 여기서 한번에 설정을 하고 있어서 헷갈릴 수 있음
+// 바꾼 순서나 흐름을 잘 생각해봐야함
 
-
-class BlackBrick {
-    // 속성에 해당하는 내용
-    constructor(left, top, right, bottom){
+class Brick {
+    // # 속성에 해당하는 내용
+    // 처음 위에서 배열을 만들때 설정해줬던 값을 이쪽으로 빼준거라고 할수 있을듯 
+    // 여기서 먼저 class로 설정을 해두고, 이제 위에서는 this.로 가져다 쓰기만 하면되지
+    constructor(left, top, right, bottom, color){
         this.left = left;
         this.top = top;
         this.right = right;
         this.bottom = bottom;
+        this.left = left;
+        this.isAlive = true;
+        this.color = color;
+    }
+    
+    // # 기능에 해당하는 내용
+    // 위에서 draw로 그렸던 내용을 이쪽 함수에 선언하고 이 함수를 이제 가져다 쓰도록 하자
+    // 일단 rect안에 들어가는 인자값이 위에서 바꼈기 때문에 배열먼저 만들고 다시 내려오자
+    draw() {
+        // 위 class에서 선언해준 것들로 변수를 바꿔주자
+        if(this.isAlive) 
+        {
+            context.rect(this.left, this.top, brickWidth, brickHeight)
+            context.fillStyle = this.color; 
+            context.fill();
+        }
     }
 }
 
-let test = new BlackBrick(canvas.width / 2 -25, canvas.height / 2, 50, 20)
+// // 가운데 블록을 생성해보자
+// class centerBlock {
+//     constructor(left, top, right, bottom, color){
+//         this.left = left;
+//         this.top = top;
+//         this.right = right;
+//         this.bottom = bottom;
+//         this.color = color;
+//     }
 
-class MovingBrick extends BlackBrick {
-    // 기능에 해당하는 내용
-    movingAction() {
-        this.right++; 
-        //console.log('움직이는중!');
-        //this.top++;
-    }
-}
-
-let test2 = new MovingBrick(canvas.width / 2 -25, canvas.height / 2, 50, 20)
-test2.movingAction();
-
-function drawBlack(){
-
-    context.beginPath(); // 그리기를 시작하겠다
-                //  x    ,    y   ,   width ,  height
-    context.rect( test.left, test.top, test.right, test.bottom);
-    context.fillStyle = 'black'; // 색깔 고르고
-    context.fill(); // 채우기
-    context.closePath(); // 그리기를 끝내겠다
-}
-
+//     draw() {
+//         context.beginPath()
+//         context.rect(this.left, this.top, brickWidth, brickHeight)
+//         context.fillStyle = this.color;
+//         context.fill();
+//         context.closePath(); 
+//     }
+// }
 
 
 setInterval(draw, 10);
