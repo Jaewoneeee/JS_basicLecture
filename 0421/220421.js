@@ -31,6 +31,8 @@ let arcPosY = canvas.height - barHeight / 2 - arcRaius
 // ball
 let arcMoveDirX = 1;
 let arcMoveDirY = 1; // 아 맞네 ㅋㅋ
+let blackMoveDirX = 1;
+//let blackMoveDirY = 1; // 아 맞네 ㅋㅋ
 let arcSpeed = 4;
 
 // bar
@@ -136,7 +138,9 @@ function keyDownEeventHandler(e) {
     }
 
     if(e.key == ' ' && startClick ){
-        setInterval(update, 10);   
+        setInterval(update, 10); 
+        setInterval(blackUpdate, 20); 
+        
         startClick = false;
     }
 
@@ -171,7 +175,6 @@ function update() {
     ball.right = arcPosX + arcRaius 
     ball.top = arcPosY - arcRaius 
     ball.bottom = arcPosY + arcRaius
-    
 
     // 충돌확인
     if(isCollisionRectToRect(ball, paddle)){
@@ -208,6 +211,20 @@ function update() {
     }
 }
 
+// 일단 가운데 블록 움지이기.
+function blackUpdate() {
+
+        if(test.left < 0 ) {
+            blackMoveDirX = 1;
+            
+        } else if(test.left > canvas.width - test.right){
+            blackMoveDirX = -1;
+        }
+    
+        test.left += blackMoveDirX * arcSpeed;
+
+}
+
 // clear하는 새로운 함수 (교수님 버젼)
 function checkToWin() {
     
@@ -240,7 +257,8 @@ function draw() {
     // 다른 도형 그리기
     drawBar();
     drawArc();
-    drawBricks() //블록 그리기 추가
+    drawBricks(); //블록 그리기 추가
+    drawBlack();
 }
 
 // ball 그리기
@@ -287,19 +305,48 @@ function drawBricks()
     context.closePath();
 }
 
+// ====== class로 접근해보기 
+
+//let barWidth = 250;
+//let barHeight = 40
+// let arcPosX = canvas.width / 2
+// let arcPosY = canvas.height / 2
 
 
-// function keyDownEeventHandler(e) {
+class BlackBrick {
+    // 속성에 해당하는 내용
+    constructor(left, top, right, bottom){
+        this.left = left;
+        this.top = top;
+        this.right = right;
+        this.bottom = bottom;
+    }
+}
 
-//     if(e.key == ' '){
+let test = new BlackBrick(canvas.width / 2 -25, canvas.height / 2, 50, 20)
 
-//         //setInterval(draw, 10);
-//         // 동적 움직임을 위해 코드 추가
-//         setInterval(update, 10);   
+class MovingBrick extends BlackBrick {
+    // 기능에 해당하는 내용
+    movingAction() {
+        this.right++; 
+        //console.log('움직이는중!');
+        //this.top++;
+    }
+}
 
+let test2 = new MovingBrick(canvas.width / 2 -25, canvas.height / 2, 50, 20)
+test2.movingAction();
 
-//     }
-// }
+function drawBlack(){
+
+    context.beginPath(); // 그리기를 시작하겠다
+                //  x    ,    y   ,   width ,  height
+    context.rect( test.left, test.top, test.right, test.bottom);
+    context.fillStyle = 'black'; // 색깔 고르고
+    context.fill(); // 채우기
+    context.closePath(); // 그리기를 끝내겠다
+}
+
 
 
 setInterval(draw, 10);
