@@ -54,8 +54,8 @@ let black = {
 // 블록만들기
 const brickWidth = 50; // 간격 10
 const brickHeight = 25; // 간격 5
-const brickColumn = 1;
-const brickRow = 1;
+const brickColumn = 5;
+const brickRow = 4;
 let clearCount = 0;
 // let brickArray = []
 let brickArray; // class로 바꾸며 그냥 선언만 해주자
