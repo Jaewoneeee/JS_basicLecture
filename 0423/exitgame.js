@@ -4,6 +4,7 @@ const context = canvas.getContext('2d');
 // keydown
 document.addEventListener("keydown", keyDownEeventHandler);
 
+
 // 충돌 객체 만들기
 let crashPlayer = {
     left: 0,
@@ -26,31 +27,62 @@ let crashMonster = {
     bottom: 0,
 };
 
-// 가위바위보
-let computerChoice = Math.random();
+// 변수 선언
+ let userChoice ;
+ let HP = 10;
+ let Gold = 0;
 
-if (computerChoice < 0.34) {
-	computerChoice = "바위";
-} else if(computerChoice <= 0.67) {
-	computerChoice = "보";
-} else {
-	computerChoice = "가위";
-} console.log("Computer: " + computerChoice);
+ function info() {
+    document.getElementById("hp").innerHTML =  "HP : " + HP;
+    document.getElementById("gold").innerHTML =   "Gold : " + Gold;
+ }
+
+ // 이동할 수 있도록
+ let playerState = true;
+
+// 가위바위보
+  let computerChoice = Math.random();
+
+  if (computerChoice < 0.34) {
+    computerChoice = "바위";
+  } else if(computerChoice <= 0.67) {
+    computerChoice = "보";
+  } else {
+    computerChoice = "가위";
+  } 
+  console.log("Computer: " + computerChoice);
 
 
 function keyDownEeventHandler(e) {
-    if(e.key == 'ArrowRight' && setPlayer.left < canvas.width - playerMoving) {
+
+    let monsterOn = Math.floor(Math.random() * 10)
+    console.log(monsterOn)
+    if(monsterOn < 3){
+      //alert("여기다 가위바위보 구현, 몬스터 출현!")
+      playerState = false;
+      let userChoice = prompt("가위, 바위, 보 중 하나를 입력하세요", );
+      //prompt("가위, 바위, 보 중 하나를 입력하세요");
+      console.log(userChoice);
+      //let test = userChoice
+      //document.write(userChoice)
+
+      compare(userChoice,computerChoice);
+      
+    } 
+    // else {
+    //   playerState = true;
+    // }
+
+    if(e.key == 'ArrowRight' && setPlayer.left < canvas.width - playerMoving && playerState) {
         setPlayer.left += playerMoving; 
-    } else if (e.key == 'ArrowLeft' && setPlayer.left > 0) {
+    } else if (e.key == 'ArrowLeft' && setPlayer.left > 0  && playerState) {
         setPlayer.left -= playerMoving;
-    } else if  (e.key == 'ArrowUp' && setPlayer.top > 0) {
+    } else if  (e.key == 'ArrowUp' && setPlayer.top > 0 && playerState) {
         setPlayer.top -= playerMoving;
-    } else if  (e.key == 'ArrowDown' && setPlayer.top < canvas.height - playerMoving) {
+    } else if  (e.key == 'ArrowDown' && setPlayer.top < canvas.height - playerMoving && playerState) {
         setPlayer.top += playerMoving;
     }  
 }
-
-//let userChoice = '';
 
 function update() {
 
@@ -78,11 +110,23 @@ function update() {
           }, 100);
       }
     
-    if (isCollisionRectToRect(crashPlayer, crashMonster)) {
-      let userChoice = prompt("가위, 바위, 보 중 하나를 입력하세요");
-    }
+    //let userChoice;
 
+    if (isCollisionRectToRect(crashPlayer, crashMonster) && userChoice == null) {
+      //let userChoice;
+      let userChoice = prompt("가위, 바위, 보 중 하나를 입력하세요", );
+       //prompt("가위, 바위, 보 중 하나를 입력하세요");
+       console.log(userChoice);
+       //let test = userChoice
+       //document.write(userChoice)
+
+       compare(userChoice,computerChoice);
+      //  if(!userChoice === null){
+      //    alert("확인")
+      //  }
+    }
 }
+
 
 // 충돌확인
 function isCollisionRectToRect(rectA, rectB) {
@@ -235,35 +279,72 @@ function compare(choice1, choice2)// 함수 정의
 {
     if(choice1===choice2)
     {
-        console.log("The result is a tie!")
-        return "The result is a tie!";
+        console.log("무승부!")
+        playerState = false;
     }
     else if(choice1==="바위")
     {
         if(choice2==="가위")
         {
-            return "바위 wins";
+            console.log("승리!")
+            playerState = true;
+            Gold += 300;
+            console.log("HP : " + HP + " / Gold : " + Gold)
+            info()
         }
         else
         {
-            return "보 wins";
+            console.log("패배!")
+            playerState = false;
+            HP -= 1
+            console.log("HP : " + HP + " / Gold : " + Gold)
+            info()
         }
     }
     else if(choice1==="보")
     {
         if(choice2==="바위")
         {
-            return "보 wins";
-            
+            console.log("승리!")
+            playerState = true;
+            Gold += 300;
+            console.log("HP : " + HP + " / Gold : " + Gold)
+            info()
         }
         else
         {
-            return "가위 wins";
+            console.log("패배!")
+            playerState = false;
+            HP -= 1
+            console.log("HP : " + HP + " / Gold : " + Gold)
+            info()
+        }
+    }
+    else if(choice1==="가위")
+    {
+        if(choice2==="보")
+        {
+            console.log("승리!")
+            playerState = true;
+            Gold += 300;
+            console.log("HP : " + HP + " / Gold : " + Gold)
+            info()
+        }
+        else
+        {
+            console.log("패배!")
+            playerState = false;
+            HP -= 1
+            console.log("HP : " + HP + " / Gold : " + Gold)
+            info()
         }
     }
 }
 
 setInterval(draw, 10);
 setInterval(update, 10);
+//setInterval(info, 100);
+info();
 setBricks();
-compare(userChoice,computerChoice);// 함수 호출!
+//compare(userChoice,computerChoice);// 함수 호출!
+
