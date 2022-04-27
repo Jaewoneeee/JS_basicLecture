@@ -40,38 +40,41 @@ let crashMonster = {
  // 이동할 수 있도록
  let playerState = true;
 
-// 가위바위보
-  let computerChoice = Math.random();
-
-  if (computerChoice < 0.34) {
-    computerChoice = "바위";
-  } else if(computerChoice <= 0.67) {
-    computerChoice = "보";
-  } else {
-    computerChoice = "가위";
-  } 
-  console.log("Computer: " + computerChoice);
+ // 랜덤보상
+ let randomReward = Math.floor(Math.random() * 100);
+ console.log(randomReward)
 
 
 function keyDownEeventHandler(e) {
 
+    // 가위바위보
+    let computerChoice = Math.random();
+
+    if (computerChoice < 0.34) {
+      computerChoice = "바위";
+    } else if(computerChoice <= 0.67) {
+      computerChoice = "보";
+    } else {
+      computerChoice = "가위";
+    } 
+    console.log("Computer: " + computerChoice);
+
+    // 몬스터출현
     let monsterOn = Math.floor(Math.random() * 10)
     console.log(monsterOn)
     if(monsterOn < 3){
-      //alert("여기다 가위바위보 구현, 몬스터 출현!")
       playerState = false;
+      let randomReward = Math.floor(Math.random() * 100);
+      console.log(randomReward)
       let userChoice = prompt("가위, 바위, 보 중 하나를 입력하세요", );
-      //prompt("가위, 바위, 보 중 하나를 입력하세요");
       console.log(userChoice);
-      //let test = userChoice
-      //document.write(userChoice)
-
       compare(userChoice,computerChoice);
-      
     } 
-    // else {
-    //   playerState = true;
-    // }
+
+    // 랜덤보상
+    // let randomReward = Math.floor(Math.random() * 100);
+    // console.log(randomReward)
+
 
     if(e.key == 'ArrowRight' && setPlayer.left < canvas.width - playerMoving && playerState) {
         setPlayer.left += playerMoving; 
@@ -112,19 +115,16 @@ function update() {
     
     //let userChoice;
 
-    if (isCollisionRectToRect(crashPlayer, crashMonster) && userChoice == null) {
-      //let userChoice;
-      let userChoice = prompt("가위, 바위, 보 중 하나를 입력하세요", );
-       //prompt("가위, 바위, 보 중 하나를 입력하세요");
-       console.log(userChoice);
-       //let test = userChoice
-       //document.write(userChoice)
+    // if (isCollisionRectToRect(crashPlayer, crashMonster) && userChoice == null) {
+    //   //let userChoice;
+    //   let userChoice = prompt("가위, 바위, 보 중 하나를 입력하세요", );
+    //    //prompt("가위, 바위, 보 중 하나를 입력하세요");
+    //    console.log(userChoice);
+    //    //let test = userChoice
+    //    //document.write(userChoice)
 
-       compare(userChoice,computerChoice);
-      //  if(!userChoice === null){
-      //    alert("확인")
-      //  }
-    }
+    //    compare(userChoice,computerChoice);
+    // }
 }
 
 
@@ -288,7 +288,7 @@ function compare(choice1, choice2)// 함수 정의
         {
             console.log("승리!")
             playerState = true;
-            Gold += 300;
+            Gold += randomReward;
             console.log("HP : " + HP + " / Gold : " + Gold)
             info()
         }
@@ -307,7 +307,7 @@ function compare(choice1, choice2)// 함수 정의
         {
             console.log("승리!")
             playerState = true;
-            Gold += 300;
+            Gold += randomReward;
             console.log("HP : " + HP + " / Gold : " + Gold)
             info()
         }
@@ -326,7 +326,7 @@ function compare(choice1, choice2)// 함수 정의
         {
             console.log("승리!")
             playerState = true;
-            Gold += 300;
+            Gold += randomReward;
             console.log("HP : " + HP + " / Gold : " + Gold)
             info()
         }
@@ -340,6 +340,27 @@ function compare(choice1, choice2)// 함수 정의
         }
     }
 }
+
+// 가위 바위 보 ..를 또 어떻게 만들어줘야하는겨? 
+let computerChoice2 = Math.random();
+
+if (computerChoice2 < 0.34) {
+  computerChoice2 = 0; // 가위
+} else if(computerChoice2 <= 0.67) {
+  computerChoice2 = 1; // 바위
+} else {
+  computerChoice2 = 2; // 보
+} 
+console.log("Computer: " + computerChoice2);
+
+// 차라리 그 버튼을 먼저 만들기? 
+function compare2(choice1, choice2){
+  // 1. choice 1 - choice 2 
+  // 2. 1번에 2 더한다음 %3 했을때
+  // 3. 0이면 승, 1이면 패, 2면 무
+
+}
+
 
 setInterval(draw, 10);
 setInterval(update, 10);
